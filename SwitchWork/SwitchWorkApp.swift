@@ -9,30 +9,30 @@ import AppKit
 enum SwitchWorkMain {
     @MainActor
     static func main() {
-        let program = NSApplication.shared
-        let delegat = AppDelegate()
-        program.delegate = delegat
-        // .accessory — program żyje wyłącznie w pasku menu: bez ikony w Docku
-        // i bez pozycji w przełączniku programów.
-        program.setActivationPolicy(.accessory)
-        _ = delegat            // delegat musi przeżyć uruchomienie pętli zdarzeń
-        program.run()
+        let app = NSApplication.shared
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        // .accessory — the app lives in the menu bar only: no Dock icon and no entry in
+        // the app switcher.
+        app.setActivationPolicy(.accessory)
+        _ = delegate            // the delegate has to outlive the start of the event loop
+        app.run()
     }
 }
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
-    private var menu: MenuPaska?
+    private var menuBar: MenuBarController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        UserDefaults.standard.register(defaults: Ustawienia.domyslne)
-        menu = MenuPaska()
+        UserDefaults.standard.register(defaults: Defaults.registered)
+        menuBar = MenuBarController()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        // Blokady i tak giną razem z procesem — to jest sprzątnięcie jawne,
-        // żeby nie polegać na tym, że system zdąży posprzątać po nas sam.
-        Czuwanie.shared.wylacz()
+        // The blocks die with the process anyway — this is an explicit cleanup, so as not
+        // to rely on the system tidying up after us in time.
+        WakeSession.shared.turnOff()
     }
 }
