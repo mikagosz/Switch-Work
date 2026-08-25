@@ -86,4 +86,12 @@ rendered icon. Both start with a control sample, so a zero means "not there" rat
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+The **source code** is MIT — see [LICENSE](LICENSE).
+
+The **app icon is not**. `SwitchWork/ikona switch-work.icon/` is Copyright (c) 2026
+mikagosz, all rights reserved, and is excluded from the MIT grant — see [NOTICE](NOTICE).
+It ships with the repository so the project builds as it is shipped; if you fork this
+project, replace it with your own icon.
+
+The menu bar toggle itself is not artwork — it is drawn at runtime from Apple's SF
+Symbols, under Apple's terms.
