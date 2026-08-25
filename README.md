@@ -59,8 +59,16 @@ macOS 26.0 or newer. No network access, no analytics, no files written outside
 xcodebuild -project Switch-Work.xcodeproj -scheme Switch-Work -configuration Release build
 ```
 
-The app is signed with a local self-signed certificate. Building a clone on another
-machine will fall back to ad-hoc signing, which is fine for running it yourself.
+The project points `CODE_SIGN_IDENTITY` at a local self-signed certificate by its SHA-1,
+which only exists on the author's machines. On any other Mac, sign ad-hoc instead:
+
+```bash
+xcodebuild -project Switch-Work.xcodeproj -scheme Switch-Work -configuration Release \
+    CODE_SIGN_IDENTITY=- build
+```
+
+Ad-hoc is enough to run the app yourself. It is not enough for anything that ties
+permissions to a stable code signature.
 
 ## Checks
 
