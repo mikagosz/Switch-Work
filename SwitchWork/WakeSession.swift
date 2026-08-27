@@ -33,15 +33,29 @@ final class WakeSession {
     }
 
     /// Whether the screen is kept awake along with the system. Survives a restart.
-    var keepScreenOn: Bool {
-        get { UserDefaults.standard.bool(forKey: Defaults.keepScreenOn) }
-        set {
-            UserDefaults.standard.set(newValue, forKey: Defaults.keepScreenOn)
-            // Changed on the fly: while a session runs, the screen block is added or
-            // removed without resetting the countdown.
+    var keepScreenOn: Bool { UserDefaults.standard.bool(forKey: Defaults.keepScreenOn) }
+
+    /// Turns the screen block on or off. Changed on the fly: while a session runs, the
+    /// block is added or removed without resetting the countdown.
+    ///
+    /// - Returns: the blocks the system **refused**. Empty means all is well. On a refusal
+    ///   the setting goes back to where it was — a tick in the menu next to a block the
+    ///   system is not holding would be the same silent lie as a glowing icon over a Mac
+    ///   that sleeps anyway.
+    @discardableResult
+    func setKeepScreenOn(_ newValue: Bool) -> [BlockKind] {
+        UserDefaults.standard.set(newValue, forKey: Defaults.keepScreenOn)
+
+        var refused: [BlockKind] = []
+        if isOn { refused = block.apply(wantedBlocks, reason: Self.reason) }
+
+        if !refused.isEmpty {
+            UserDefaults.standard.set(!newValue, forKey: Defaults.keepScreenOn)
             if isOn { _ = block.apply(wantedBlocks, reason: Self.reason) }
-            onChange?()
         }
+
+        onChange?()
+        return refused
     }
 
     private init() {

@@ -39,7 +39,15 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         let isOn = session.isOn
         guard lastIsOn != isOn else { return }
         lastIsOn = isOn
-        button.image = isOn ? onIcon : offIcon
+
+        let icon = isOn ? onIcon : offIcon
+        button.image = icon
+        // Should the symbol ever fail to load, the button would sit in the menu bar as an
+        // empty square: nothing to see, nothing to explain it, and the menu reachable only
+        // by guessing where to click. A word is worse looking and far better than that.
+        button.title = icon == nil
+            ? (isOn ? String(localized: "On") : String(localized: "Off"))
+            : ""
     }
 
     // MARK: - Menu
@@ -100,12 +108,33 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     @objc private func twoHours() { turnOn(minutes: 120) }
     @objc private func turnOff() { session.turnOff() }
 
+    /// Same rule as when turning the switch on: a refusal the user cannot see is worse
+    /// than no feature at all.
     @objc private func toggleScreen() {
-        session.keepScreenOn.toggle()
+        let refused = session.setKeepScreenOn(!session.keepScreenOn)
+        guard !refused.isEmpty else { return }
+
+        let names = refused.map(\.rawValue).joined(separator: ", ")
+        warn(
+            String(localized: "Part of the block was refused"),
+            String(format: String(localized: "The Mac will stay awake, but macOS refused: %@"), names)
+        )
     }
 
     @objc private func quit() {
         NSApp.terminate(nil)
+    }
+
+    /// What the app reports about itself, read from the bundle it is running from.
+    ///
+    /// Never a number typed into the code: a hand-written version outlives the build it
+    /// described and then quietly lies. `nil` when the keys are missing — the line is
+    /// simply left out rather than showing a blank.
+    private var versionLine: String? {
+        let info = Bundle.main.infoDictionary
+        guard let version = info?["CFBundleShortVersionString"] as? String,
+              let build = info?["CFBundleVersion"] as? String else { return nil }
+        return String(format: String(localized: "Switch-Work %@ (build %@)"), version, build)
     }
 
     @objc private func customTime() {
@@ -113,12 +142,28 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         field.stringValue = String(UserDefaults.standard.integer(forKey: Defaults.lastMinutes))
         field.alignment = .right
 
+        // The one window this app has, so this is where the version belongs. The field
+        // keeps the top row; the version sits under it, quiet and right-aligned.
+        let versionLine = versionLine
+        let accessory = NSView(frame: NSRect(x: 0, y: 0, width: 220, height: versionLine == nil ? 24 : 46))
+        field.frame = NSRect(x: 140, y: accessory.frame.height - 24, width: 80, height: 24)
+        accessory.addSubview(field)
+
+        if let versionLine {
+            let label = NSTextField(labelWithString: versionLine)
+            label.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+            label.textColor = .secondaryLabelColor
+            label.alignment = .right
+            label.frame = NSRect(x: 0, y: 0, width: 220, height: 16)
+            accessory.addSubview(label)
+        }
+
         let prompt = NSAlert()
         prompt.messageText = String(localized: "How long should Switch-Work stay awake?")
         prompt.informativeText = String(localized: "Enter the time in minutes.")
         prompt.addButton(withTitle: String(localized: "Turn on"))
         prompt.addButton(withTitle: String(localized: "Cancel"))
-        prompt.accessoryView = field
+        prompt.accessoryView = accessory
 
         NSApp.activate(ignoringOtherApps: true)
         prompt.window.initialFirstResponder = field
