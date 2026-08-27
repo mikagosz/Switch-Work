@@ -120,6 +120,40 @@
         }
       }
     },
+    "Off": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wył."
+          }
+        }
+      }
+    },
+    "On": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wł."
+          }
+        }
+      }
+    },
     "Part of the block was refused": {
       "extractionState": "manual",
       "localizations": {
@@ -201,6 +235,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ustaw na 2 godziny"
+          }
+        }
+      }
+    },
+    "Switch-Work %@ (build %@)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work %@ (build %@)"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work %@ (kompilacja %@)"
           }
         }
       }

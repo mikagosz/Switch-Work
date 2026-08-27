@@ -4,7 +4,7 @@ The MIT licence in LICENSE covers the SOURCE CODE of this project.
 
 It does NOT cover the application artwork:
 
-    SwitchWork/ikona switch-work.icon/   (the app icon, all files inside)
+    SwitchWork/Switch-Work.icon/   (the app icon, all files inside)
 
 That artwork is Copyright (c) 2026 mikagosz, all rights reserved. It is included
 in this repository so the project builds as shipped. It may not be reused,
