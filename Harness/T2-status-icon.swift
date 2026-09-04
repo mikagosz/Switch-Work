@@ -90,8 +90,10 @@ check("OFF draws something", offPixels.black + offPixels.other > 20)
 // here: same symbol, same point size, same box means the outline cannot have shrunk.
 checkEqual("ON and OFF are the same size — the outline cannot shrink",
            on?.size, off?.size)
-checkEqual("the box is the point size asked for",
-           on?.size.height.rounded(), StatusIcon.pointSize + 3)  // symbol box > glyph
+checkEqual("the box is the disc size [U] asked for",
+           on?.size.height.rounded(), StatusIcon.pointSize)
+check("the outline is drawn smaller than the disc",
+      StatusIcon.outlineSize < StatusIcon.pointSize)
 
 // --- THE FILL SHRINKS WITH THE REMAINING TIME -------------------------------
 var poprzedni = Int.max
@@ -112,8 +114,8 @@ print("  CONTROL: green full \(pelnyGreen) vs empty \(pustyGreen)")
 check("the counter can tell a full dial from an empty one", pelnyGreen > pustyGreen * 2)
 
 // --- SIZE -------------------------------------------------------------------
-check("the symbol is sized in the range [U] asked for",
-      StatusIcon.pointSize >= 18 && StatusIcon.pointSize <= 19)
+checkEqual("the disc is 19 pt", StatusIcon.pointSize, 19)
+checkEqual("the outline is 17 pt", StatusIcon.outlineSize, 17)
 
 // --- THE COLOUR IS THE USER'S ------------------------------------------------
 // [U], 2026-09-04: ten colours to choose from, green until chosen.
