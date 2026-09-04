@@ -166,13 +166,17 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     /// What the app reports about itself, read from the bundle it is running from.
     ///
     /// Never a number typed into the code: a hand-written version outlives the build it
-    /// described and then quietly lies. `nil` when the keys are missing — the line is
+    /// described and then quietly lies. `nil` when the key is missing — the line is
     /// simply left out rather than showing a blank.
+    ///
+    /// > [!info] The build number is deliberately not here
+    /// > It used to read "Switch-Work 0.3.0 (build 2)". `CFBundleVersion` matters to
+    /// > macOS when it has to tell two copies of the same release apart; it tells the
+    /// > person reading the menu nothing. [U] asked for the plain line on 2026-09-04.
     private var versionLine: String? {
-        let info = Bundle.main.infoDictionary
-        guard let version = info?["CFBundleShortVersionString"] as? String,
-              let build = info?["CFBundleVersion"] as? String else { return nil }
-        return String(format: String(localized: "Switch-Work %@ (build %@)"), version, build)
+        guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        else { return nil }
+        return String(format: String(localized: "Switch-Work v.%@"), version)
     }
 
     @objc private func customTime() {

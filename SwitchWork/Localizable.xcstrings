@@ -239,23 +239,6 @@
         }
       }
     },
-    "Switch-Work %@ (build %@)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Switch-Work %@ (build %@)"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Switch-Work %@ (kompilacja %@)"
-          }
-        }
-      }
-    },
     "Switch-Work is off": {
       "extractionState": "manual",
       "localizations": {
@@ -303,6 +286,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Switch-Work zostaje wyłączony — bez tej blokady nic nie byłoby chronione. Odmowa: %@"
+          }
+        }
+      }
+    },
+    "Switch-Work v.%@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work v.%@"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work v.%@"
           }
         }
       }
