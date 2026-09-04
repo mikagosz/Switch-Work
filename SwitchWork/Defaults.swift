@@ -17,9 +17,13 @@ enum Defaults {
     /// Which colour the ON icon is painted with. Stored as `IconColor.rawValue`.
     static let iconColor = "iconColor"
 
+    /// The stopwatch outline over it. Stored as `OutlineColor.rawValue`.
+    static let outlineColor = "outlineColor"
+
     static let registered: [String: Any] = [
         keepScreenOn: false,
         lastMinutes: 60,
         iconColor: IconColor.green.rawValue,
+        outlineColor: OutlineColor.auto.rawValue,
     ]
 }

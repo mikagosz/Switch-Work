@@ -136,9 +136,30 @@ print("  red icon: black \(czerwona.black), green \(czerwona.green), other \(cze
 check("the red icon carries no green at all", czerwona.green == 0)
 check("the red icon still draws something", czerwona.other > 100)
 
+// --- THE OUTLINE COLOUR IS ALSO THE USER'S ----------------------------------
+// [U], 2026-09-04: "daj mi wybór między białym i czarnym konturem".
+IconColor.ustaw(.green)
+UserDefaults.standard.removeObject(forKey: Defaults.outlineColor)
+checkEqual("with nothing stored the outline follows the appearance", OutlineColor.wybrany, .auto)
+checkEqual("there are three outline options", OutlineColor.allCases.count, 3)
+
+OutlineColor.ustaw(.white)
+checkEqual("a picked outline colour sticks", OutlineColor.wybrany, .white)
+let bialy = count(StatusIcon.toggle(isOn: true, progress: 0.5))
+OutlineColor.ustaw(.black)
+let czarny = count(StatusIcon.toggle(isOn: true, progress: 0.5))
+print("  white outline: black \(bialy.black), other \(bialy.other)")
+print("  black outline: black \(czarny.black), other \(czarny.other)")
+check("a black outline puts black pixels on the icon", czarny.black > 50)
+check("a white outline does not", bialy.black < czarny.black / 2)
+check("the disc keeps its colour either way",
+      bialy.green > 100 && czarny.green > 100)
+
 // Leave the machine as it was found — this check runs on [U]'s Mac.
 UserDefaults.standard.removeObject(forKey: Defaults.iconColor)
-checkEqual("the check put the setting back", IconColor.wybrany, .green)
+UserDefaults.standard.removeObject(forKey: Defaults.outlineColor)
+checkEqual("the check put the icon colour back", IconColor.wybrany, .green)
+checkEqual("the check put the outline colour back", OutlineColor.wybrany, .auto)
 
 print("")
 print("PASSED: \(passed), FAILED: \(failed)")

@@ -87,3 +87,57 @@ nonisolated enum IconColor: String, CaseIterable, Sendable {
                     .applying(NSImage.SymbolConfiguration(hierarchicalColor: nsColor)))
     }
 }
+
+/// The colour of the stopwatch outline drawn over the disc.
+///
+/// > [!info] Why three options and not two
+/// > [U], 2026-09-04: *„daj mi wybór między białym i czarnym konturem"*. Both are here —
+/// > and so is the behaviour they replace, as the default. Dropping it would be a step
+/// > back for anybody who switches appearance during the day: a fixed white outline
+/// > disappears into a light menu bar and a fixed black one into a dark one. `.auto`
+/// > keeps the old behaviour for whoever never opens this submenu.
+nonisolated enum OutlineColor: String, CaseIterable, Sendable {
+    case auto, black, white
+
+    var nsColor: NSColor {
+        switch self {
+        case .auto:  return .labelColor   // macOS resolves it against the appearance
+        case .black: return .black
+        case .white: return .white
+        }
+    }
+
+    var nazwa: String {
+        switch self {
+        case .auto:  return String(localized: "Automatic")
+        case .black: return String(localized: "Black")
+        case .white: return String(localized: "White")
+        }
+    }
+
+    /// What the entry says under its name, so „Automatic" is not a guess.
+    var opis: String? {
+        self == .auto
+            ? String(localized: "Black on a light menu bar, white on a dark one")
+            : nil
+    }
+
+    static var wybrany: OutlineColor {
+        let zapisany = UserDefaults.standard.string(forKey: Defaults.outlineColor) ?? ""
+        return OutlineColor(rawValue: zapisany) ?? .auto
+    }
+
+    static func ustaw(_ kolor: OutlineColor) {
+        UserDefaults.standard.set(kolor.rawValue, forKey: Defaults.outlineColor)
+    }
+
+    /// A swatch with a visible rim, because a black dot on a dark menu is a hole and a
+    /// white one on a light menu is nothing at all.
+    var probka: NSImage? {
+        NSImage(systemSymbolName: "circle.circle.fill", accessibilityDescription: nazwa)?
+            .withSymbolConfiguration(
+                NSImage.SymbolConfiguration(pointSize: 11, weight: .regular)
+                    .applying(NSImage.SymbolConfiguration(
+                        paletteColors: [nsColor, .secondaryLabelColor])))
+    }
+}

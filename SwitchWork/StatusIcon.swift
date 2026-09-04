@@ -36,9 +36,9 @@ enum StatusIcon {
     ///
     /// > [!important] The outline is NEVER coloured
     /// > [U], 2026-09-04, after seeing a green outline: *„kontur ma zostać czarny albo
-    /// > biały"*. It is painted in `labelColor`, which macOS resolves against the
-    /// > appearance in force — black in a light menu bar, white in a dark one — so the
-    /// > stopwatch stays legible whatever the user's colour choice is behind it.
+    /// > biały"*, then: *„daj mi wybór między białym i czarnym"*. `OutlineColor` holds
+    /// > that choice; its default follows the appearance, so a fixed white outline does
+    /// > not vanish into a light menu bar for somebody who never opens the submenu.
     ///
     /// > [!important] The outline must not change size between states
     /// > Both states draw the same symbol at `outlineSize`. The tempting pairing —
@@ -66,7 +66,7 @@ enum StatusIcon {
         // symbol's secondary layers to a grey, and [U] asked for black or white —
         // the dimmed ring was visible next to the crisp OFF icon in the same render.
         let konturConf = podstawa.applying(
-            NSImage.SymbolConfiguration(paletteColors: [.labelColor]))
+            NSImage.SymbolConfiguration(paletteColors: [OutlineColor.wybrany.nsColor]))
         guard let konturKolorowy = NSImage(systemSymbolName: "timer", accessibilityDescription: label)?
             .withSymbolConfiguration(konturConf),
               let konturSzablon = NSImage(systemSymbolName: "timer", accessibilityDescription: label)?

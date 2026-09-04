@@ -1,6 +1,23 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Automatic": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatyczny"
+          }
+        }
+      }
+    },
     "Awake — %@ left": {
       "extractionState": "manual",
       "localizations": {
@@ -14,6 +31,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Czuwa — zostało %@"
+          }
+        }
+      }
+    },
+    "Black": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Black"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Czarny"
+          }
+        }
+      }
+    },
+    "Black on a light menu bar, white on a dark one": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Black on a light menu bar, white on a dark one"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Czarny na jasnym pasku menu, biały na ciemnym"
           }
         }
       }
@@ -303,6 +354,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pomarańczowy"
+          }
+        }
+      }
+    },
+    "Outline colour": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outline colour"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kolor konturu"
           }
         }
       }
@@ -694,6 +762,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Czeka na Twoją zgodę w Ustawieniach systemowych → Ogólne → Elementy logowania."
+          }
+        }
+      }
+    },
+    "White": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "White"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biały"
           }
         }
       }
