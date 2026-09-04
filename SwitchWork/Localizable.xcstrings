@@ -18,6 +18,23 @@
         }
       }
     },
+    "Blocked in System Settings → General → Login Items.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocked in System Settings → General → Login Items."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zablokowane w Ustawieniach systemowych → Ogólne → Elementy logowania."
+          }
+        }
+      }
+    },
     "Cancel": {
       "extractionState": "manual",
       "localizations": {
@@ -31,6 +48,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Anuluj"
+          }
+        }
+      }
+    },
+    "Could not change the setting: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not change the setting: %@"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się zmienić ustawienia: %@"
           }
         }
       }
@@ -154,6 +188,23 @@
         }
       }
     },
+    "Open at login": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open at login"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uruchom przy starcie"
+          }
+        }
+      }
+    },
     "Part of the block was refused": {
       "extractionState": "manual",
       "localizations": {
@@ -171,19 +222,19 @@
         }
       }
     },
-    "Quit Switch-Work": {
+    "Quit": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quit Switch-Work"
+            "value": "Quit"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zakończ Switch-Work"
+            "value": "Zakończ"
           }
         }
       }
@@ -341,6 +392,40 @@
         }
       }
     },
+    "The app signature does not allow registration. Move Switch-Work to Applications and launch it from there.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app signature does not allow registration. Move Switch-Work to Applications and launch it from there."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podpis aplikacji nie pozwala na rejestrację. Przenieś Switch-Work do Programów i uruchom stamtąd."
+          }
+        }
+      }
+    },
+    "The system thinks the item already exists. Remove Switch-Work from System Settings → General → Login Items and try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The system thinks the item already exists. Remove Switch-Work from System Settings → General → Login Items and try again."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System uważa, że pozycja już istnieje. Usuń Switch-Work z Ustawień systemowych → Ogólne → Elementy logowania i spróbuj ponownie."
+          }
+        }
+      }
+    },
     "Turn off now": {
       "extractionState": "manual",
       "localizations": {
@@ -422,6 +507,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Włącz na własny czas…"
+          }
+        }
+      }
+    },
+    "Waiting for your approval in System Settings → General → Login Items.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for your approval in System Settings → General → Login Items."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Czeka na Twoją zgodę w Ustawieniach systemowych → Ogólne → Elementy logowania."
           }
         }
       }
