@@ -1,10 +1,15 @@
 import AppKit
 
-// Harness T2 — does the green icon really carry a black power outline?
+// Harness T2 — does the icon keep the SAME outline when it turns green?
 //
-// Up to 0.1.0 the palette had a single colour, so the glyph blended into the circle and
-// vanished — and the code looked exactly like code that works. That is why this check
-// does not read the configuration: it counts PIXELS of the finished image.
+// [U], 2026-09-04: "jak zielony to nie zmniejszaj konturu ikony". The tempting pairing
+// `timer` + `timer.circle.fill` breaks exactly that — the filled variant redraws the
+// stopwatch smaller so it fits inside a disc, and the glyph jumps in size on every
+// toggle. Both states now use `timer`, and only the colour changes.
+//
+// So this check counts PIXELS of the finished images and compares the two states'
+// shapes against each other. Reading the configuration would not catch a symbol that
+// silently draws itself at a different scale.
 
 var passed = 0
 var failed = 0
@@ -58,36 +63,80 @@ check("the pixel counter works at all", control.black > 4000)
 check("the counter sees no green where there is none", control.green == 0)
 
 // --- THE ON ICON ------------------------------------------------------------
-let on = StatusIcon.toggle(isOn: true)
+let on = StatusIcon.toggle(isOn: true, progress: 1)
 check("the ON symbol exists", on != nil)
 checkEqual("ON is NOT a template (colour would be lost otherwise)", on?.isTemplate, false)
 
 let onPixels = count(on)
-print("  on:  black \(onPixels.black), green \(onPixels.green), other \(onPixels.other)")
-check("there is green on the icon (the circle)", onPixels.green > 100)
-check("there is black on the icon (the power outline)", onPixels.black > 20)
-check("less black than green — the glyph sits ON the circle, not the other way round",
-      onPixels.black < onPixels.green)
-
-// --- POSITIVE CONTROL: a reversed palette has to give the reverse result -----
-// If the numbers came out the same for every palette, the checks above would mean nothing.
-let reversed = NSImage(systemSymbolName: "power.circle.fill", accessibilityDescription: nil)?
-    .withSymbolConfiguration(
-        NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-            .applying(NSImage.SymbolConfiguration(paletteColors: [StatusIcon.onColor, StatusIcon.glyphColor])))
-reversed?.isTemplate = false
-let reversedPixels = count(reversed)
-print("  reversed palette: black \(reversedPixels.black), green \(reversedPixels.green)")
-check("a reversed palette gives the reversed layout", reversedPixels.black > reversedPixels.green)
+print("  on 100%: black \(onPixels.black), green \(onPixels.green), other \(onPixels.other)")
+check("the ON icon is green", onPixels.green > 100)
 
 // --- THE OFF ICON -----------------------------------------------------------
 let off = StatusIcon.toggle(isOn: false)
 check("the OFF symbol exists", off != nil)
 checkEqual("OFF IS a template — the menu bar picks its colour", off?.isTemplate, true)
 let offPixels = count(off)
-print("  off: black \(offPixels.black), green \(offPixels.green), other \(offPixels.other)")
+print("  off:     black \(offPixels.black), green \(offPixels.green), other \(offPixels.other)")
 check("OFF carries no green", offPixels.green == 0)
 check("OFF draws something", offPixels.black + offPixels.other > 20)
+
+// --- THE OUTLINE MUST NOT SHRINK --------------------------------------------
+// [U]'s requirement, and the reason both states share one symbol at one point size.
+//
+// 🔴 Compared by SIZE, not by ink. An earlier version of this check counted lit pixels
+// of both images scaled to 64×64 and "failed" at 96 against 580 — but it was comparing
+// a system symbol, which scales as a vector, against an image drawn at 19 pt and then
+// blown up. The icon was fine; the measurement was not. Size is the honest question
+// here: same symbol, same point size, same box means the outline cannot have shrunk.
+checkEqual("ON and OFF are the same size — the outline cannot shrink",
+           on?.size, off?.size)
+checkEqual("the box is the point size asked for",
+           on?.size.height.rounded(), StatusIcon.pointSize + 3)  // symbol box > glyph
+
+// --- THE FILL SHRINKS WITH THE REMAINING TIME -------------------------------
+var poprzedni = Int.max
+for p in [1.0, 0.75, 0.5, 0.25, 0.0] {
+    let ile = count(StatusIcon.toggle(isOn: true, progress: p)).green
+    print("  fill at \(Int(p * 100))%: green \(ile)")
+    check("fill at \(Int(p * 100))% is smaller than the step before", ile < poprzedni)
+    poprzedni = ile
+}
+
+// --- POSITIVE CONTROL -------------------------------------------------------
+// The loop above would pass just as happily if `count` returned a falling sequence for
+// anything at all. A full fill has to be substantially bigger than an empty one — if
+// those two came out equal, every check above would be measuring nothing.
+let pelnyGreen = count(StatusIcon.toggle(isOn: true, progress: 1)).green
+let pustyGreen = count(StatusIcon.toggle(isOn: true, progress: 0)).green
+print("  CONTROL: green full \(pelnyGreen) vs empty \(pustyGreen)")
+check("the counter can tell a full dial from an empty one", pelnyGreen > pustyGreen * 2)
+
+// --- SIZE -------------------------------------------------------------------
+check("the symbol is sized in the range [U] asked for",
+      StatusIcon.pointSize >= 18 && StatusIcon.pointSize <= 19)
+
+// --- THE COLOUR IS THE USER'S ------------------------------------------------
+// [U], 2026-09-04: ten colours to choose from, green until chosen.
+checkEqual("there are ten colours to pick from", IconColor.allCases.count, 10)
+checkEqual("green is first, so it is what a fresh install shows", IconColor.allCases.first, .green)
+
+UserDefaults.standard.removeObject(forKey: Defaults.iconColor)
+checkEqual("with nothing stored the icon is green", IconColor.wybrany, .green)
+
+UserDefaults.standard.set("zielonkawy-fiolet", forKey: Defaults.iconColor)
+checkEqual("an unknown stored colour falls back to green instead of losing the icon",
+           IconColor.wybrany, .green)
+
+IconColor.ustaw(.red)
+checkEqual("a picked colour is what the icon asks for", IconColor.wybrany, .red)
+let czerwona = count(StatusIcon.toggle(isOn: true, progress: 1))
+print("  red icon: black \(czerwona.black), green \(czerwona.green), other \(czerwona.other)")
+check("the red icon carries no green at all", czerwona.green == 0)
+check("the red icon still draws something", czerwona.other > 100)
+
+// Leave the machine as it was found — this check runs on [U]'s Mac.
+UserDefaults.standard.removeObject(forKey: Defaults.iconColor)
+checkEqual("the check put the setting back", IconColor.wybrany, .green)
 
 print("")
 print("PASSED: \(passed), FAILED: \(failed)")

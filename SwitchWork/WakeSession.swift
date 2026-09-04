@@ -22,6 +22,14 @@ final class WakeSession {
     /// When the session ends. `nil` means the switch is off.
     private(set) var endsAt: Date?
 
+    /// How long the running session was set for, in seconds.
+    ///
+    /// Needed for the icon's shrinking fill: `remaining` alone says how much is left, but
+    /// not how much that is *out of*. Set again on every `turnOn`, because turning on
+    /// while a session runs moves the deadline — from the user's point of view that is a
+    /// new stretch of time, and the fill should start over full rather than jump.
+    private(set) var totalDuration: TimeInterval = 0
+
     /// Called after every state change — the icon and the menu refresh from this one place.
     var onChange: (() -> Void)?
 
@@ -30,6 +38,16 @@ final class WakeSession {
     var remaining: TimeInterval {
         guard let endsAt else { return 0 }
         return max(0, endsAt.timeIntervalSinceNow)
+    }
+
+    /// Share of the session still ahead, `0…1`. Zero when the switch is off.
+    ///
+    /// Clamped on both ends: the deadline timer has a second of slack, so `remaining`
+    /// can briefly exceed the total after a change, and a fill drawn past full would
+    /// wrap around to an empty disc — the exact opposite of what it means.
+    var progress: Double {
+        guard isOn, totalDuration > 0 else { return 0 }
+        return min(1, max(0, remaining / totalDuration))
     }
 
     /// Whether the screen is kept awake along with the system. Survives a restart.
@@ -78,7 +96,8 @@ final class WakeSession {
     ///   be protected and a green icon would be a lie.
     @discardableResult
     func turnOn(minutes: Int) -> [BlockKind] {
-        endsAt = Date().addingTimeInterval(TimeInterval(minutes) * 60)
+        totalDuration = TimeInterval(minutes) * 60
+        endsAt = Date().addingTimeInterval(totalDuration)
         let refused = block.apply(wantedBlocks, reason: Self.reason)
 
         if refused.contains(.system) {
@@ -94,6 +113,7 @@ final class WakeSession {
     /// Ends the session and drops every block — the system goes back to its own settings.
     func turnOff() {
         endsAt = nil
+        totalDuration = 0
         deadlineTimer?.invalidate()
         deadlineTimer = nil
         block.releaseAll()
