@@ -136,6 +136,10 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         kolory.submenu = menuKolorow()
         menu.addItem(kolory)
 
+        let kontur = NSMenuItem(title: String(localized: "Outline colour"), action: nil, keyEquivalent: "")
+        kontur.submenu = menuKonturu()
+        menu.addItem(kontur)
+
         menu.addItem(.separator())
 
         // The version belongs somewhere the user actually looks. It used to appear only
@@ -174,6 +178,33 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             podmenu.addItem(pozycja)
         }
         return podmenu
+    }
+
+    /// Automatic, black, white — three entries, so no submenu scrolling and no guessing
+    /// which of two fixed colours the current menu bar will swallow.
+    private func menuKonturu() -> NSMenu {
+        let podmenu = NSMenu()
+        let biezacy = OutlineColor.wybrany
+        for kolor in OutlineColor.allCases {
+            let pozycja = NSMenuItem(title: kolor.nazwa,
+                                     action: #selector(wybierzKontur(_:)),
+                                     keyEquivalent: "")
+            pozycja.target = self
+            pozycja.representedObject = kolor.rawValue
+            pozycja.image = kolor.probka
+            pozycja.state = kolor == biezacy ? .on : .off
+            pozycja.toolTip = kolor.opis
+            podmenu.addItem(pozycja)
+        }
+        return podmenu
+    }
+
+    @objc private func wybierzKontur(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String,
+              let kolor = OutlineColor(rawValue: raw) else { return }
+        OutlineColor.ustaw(kolor)
+        ostatniaIkona = nil
+        refreshIcon()
     }
 
     @objc private func wybierzKolor(_ sender: NSMenuItem) {
