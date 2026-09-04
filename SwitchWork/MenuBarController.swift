@@ -85,7 +85,45 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         menu.addItem(screen)
 
         menu.addItem(.separator())
+
+        // Launch at login. State comes from SMAppService on every menu open, never from
+        // a cached flag — macOS lets the user revoke a login item in System Settings
+        // without telling the app, and a stale tick would be worse than no tick.
+        let login = item(String(localized: "Open at login"), #selector(toggleLoginItem))
+        login.state = LoginItem.isEnabled ? .on : .off
+        if LoginItem.needsApproval {
+            // Not the same as being on: registration went through, but the user still
+            // has to allow it. Saying "on" here would promise something that will not
+            // happen at the next restart.
+            login.state = .mixed
+            login.toolTip = String(localized: "Waiting for your approval in System Settings → General → Login Items.")
+        }
+        menu.addItem(login)
+
+        menu.addItem(.separator())
+
+        // The version belongs somewhere the user actually looks. It was only in the
+        // "my own time" dialog, which meant reading it required opening a prompt about
+        // something else entirely — so in practice nobody ever saw it.
+        if let versionLine {
+            let stamp = NSMenuItem(title: versionLine, action: nil, keyEquivalent: "")
+            stamp.isEnabled = false
+            menu.addItem(stamp)
+        }
+
         menu.addItem(item(String(localized: "Quit Switch-Work"), #selector(quit), key: "q"))
+    }
+
+    /// Flips the login item and says out loud when the system refused.
+    ///
+    /// A silent refusal is the bad case here, exactly like with the sleep block: the tick
+    /// would stay off, the user would shrug, and the app would quietly not start at the
+    /// next login.
+    @objc private func toggleLoginItem() {
+        let turningOn = !LoginItem.isEnabled
+        if let problem = LoginItem.enable(turningOn) {
+            warn(String(localized: "Launch at login did not change"), problem)
+        }
     }
 
     private func item(_ title: String, _ action: Selector, key: String = "") -> NSMenuItem {
