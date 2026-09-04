@@ -55,30 +55,35 @@ enum LoginItem {
             return nil
         } catch {
             log.error("login item change failed: \(error.localizedDescription)")
-            return explain(error, turningOn: on)
+            return explain(error)
         }
     }
 
     /// Turns a framework error into a sentence that tells the user what to do next.
-    private static func explain(_ error: Error, turningOn: Bool) -> String {
-        let ns = error as NSError
-
-        // 🔴 The one failure that is not the app's fault and not the user's either:
-        // macOS refuses to register a bundle it cannot vouch for. Happens with a build
-        // run straight from DerivedData, or an app still carrying the quarantine flag
-        // after a download. Moving it to /Applications clears both.
-        if ns.domain == NSOSStatusErrorDomain || ns.code == 1 {
+    ///
+    /// The codes come from `ServiceManagement` and each one means a different fix, so
+    /// they are spelled out instead of passing `localizedDescription` through — that
+    /// string says things like "Operation not permitted", which helps nobody.
+    ///
+    /// Same three cases TokenTime already learned the hard way (P1-02 there): the item
+    /// is already registered, the user blocked it, or the signature does not allow it.
+    private static func explain(_ error: Error) -> String {
+        switch (error as NSError).code {
+        case kSMErrorAlreadyRegistered:
             return String(localized: """
-                macOS refused to register Switch-Work for launch at login. \
-                This usually means the app is not in the Applications folder yet. \
-                Move it there and try again.
+                The system thinks the item already exists. Remove Switch-Work from \
+                System Settings → General → Login Items and try again.
                 """)
+        case kSMErrorLaunchDeniedByUser:
+            return String(localized: "Blocked in System Settings → General → Login Items.")
+        case kSMErrorInvalidSignature:
+            return String(localized: """
+                The app signature does not allow registration. Move Switch-Work to \
+                Applications and launch it from there.
+                """)
+        default:
+            return String(format: String(localized: "Could not change the setting: %@"),
+                          error.localizedDescription)
         }
-
-        return turningOn
-            ? String(format: String(localized: "Could not turn on launch at login: %@"),
-                     ns.localizedDescription)
-            : String(format: String(localized: "Could not turn off launch at login: %@"),
-                     ns.localizedDescription)
     }
 }

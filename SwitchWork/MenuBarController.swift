@@ -19,6 +19,12 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     private lazy var onIcon: NSImage? = StatusIcon.toggle(isOn: true)
     private var lastIsOn: Bool?
 
+    /// Last refusal from `SMAppService`, shown under the footer until it changes.
+    ///
+    /// Not an alert: this app has no window to put one over, and a modal for a checkbox
+    /// is heavier than the thing it explains. TokenTime shows the same note the same way.
+    private var launchNote: String?
+
     override init() {
         super.init()
 
@@ -86,32 +92,68 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
         menu.addItem(.separator())
 
-        // Launch at login. State comes from SMAppService on every menu open, never from
-        // a cached flag — macOS lets the user revoke a login item in System Settings
-        // without telling the app, and a stale tick would be worse than no tick.
-        let login = item(String(localized: "Open at login"), #selector(toggleLoginItem))
-        login.state = LoginItem.isEnabled ? .on : .off
-        if LoginItem.needsApproval {
-            // Not the same as being on: registration went through, but the user still
-            // has to allow it. Saying "on" here would promise something that will not
-            // happen at the next restart.
-            login.state = .mixed
-            login.toolTip = String(localized: "Waiting for your approval in System Settings → General → Login Items.")
-        }
-        menu.addItem(login)
-
-        menu.addItem(.separator())
-
-        // The version belongs somewhere the user actually looks. It was only in the
-        // "my own time" dialog, which meant reading it required opening a prompt about
-        // something else entirely — so in practice nobody ever saw it.
+        // The version belongs somewhere the user actually looks. It used to appear only
+        // inside the "my own time" prompt, which meant reading it required opening a
+        // dialog about something else — so in practice nobody ever saw it.
         if let versionLine {
             let stamp = NSMenuItem(title: versionLine, action: nil, keyEquivalent: "")
             stamp.isEnabled = false
             menu.addItem(stamp)
         }
 
-        menu.addItem(item(String(localized: "Quit Switch-Work"), #selector(quit), key: "q"))
+        menu.addItem(stopka())
+        if let launchNote {
+            let note = NSMenuItem(title: launchNote, action: nil, keyEquivalent: "")
+            note.isEnabled = false
+            menu.addItem(note)
+        }
+    }
+
+    // MARK: - Stopka
+
+    /// One row holding both footer controls, the way TokenTime does it.
+    ///
+    /// > [!info] Why a custom view and not two menu items
+    /// > [U] asked for exactly this bar on 2026-09-04, pointing at TokenTime. There it
+    /// > is SwiftUI inside a `MenuBarExtra`; here the whole menu is `NSMenu`, and a plain
+    /// > `NSMenuItem` cannot hold two controls side by side. A view can.
+    /// >
+    /// > It buys one more thing: clicking a control inside a custom view does **not**
+    /// > close the menu, so the tick flips under the cursor and a refusal can be shown
+    /// > right there — instead of a modal alert over an app that has no windows.
+    private func stopka() -> NSMenuItem {
+        let szerokosc: CGFloat = 260
+        let widok = NSView(frame: NSRect(x: 0, y: 0, width: szerokosc, height: 28))
+
+        let start = NSButton(checkboxWithTitle: String(localized: "Open at login"),
+                             target: self, action: #selector(toggleLoginItem))
+        start.font = .menuFont(ofSize: NSFont.systemFontSize)
+        start.state = LoginItem.isEnabled ? .on : .off
+        if LoginItem.needsApproval {
+            // Not the same as being on: registration went through, but the item will not
+            // launch until the user allows it. A full tick would promise a restart
+            // behaviour that is not going to happen.
+            start.allowsMixedState = true
+            start.state = .mixed
+            start.toolTip = String(localized: "Waiting for your approval in System Settings → General → Login Items.")
+        }
+        start.sizeToFit()
+        start.frame.origin = CGPoint(x: 14, y: (28 - start.frame.height) / 2)
+        widok.addSubview(start)
+
+        let koniec = NSButton(title: String(localized: "Quit"),
+                              target: self, action: #selector(quit))
+        koniec.isBordered = false
+        koniec.font = .menuFont(ofSize: NSFont.systemFontSize)
+        koniec.contentTintColor = .secondaryLabelColor
+        koniec.sizeToFit()
+        koniec.frame.origin = CGPoint(x: szerokosc - koniec.frame.width - 14,
+                                      y: (28 - koniec.frame.height) / 2)
+        widok.addSubview(koniec)
+
+        let pozycja = NSMenuItem()
+        pozycja.view = widok
+        return pozycja
     }
 
     /// Flips the login item and says out loud when the system refused.
@@ -120,10 +162,11 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     /// would stay off, the user would shrug, and the app would quietly not start at the
     /// next login.
     @objc private func toggleLoginItem() {
-        let turningOn = !LoginItem.isEnabled
-        if let problem = LoginItem.enable(turningOn) {
-            warn(String(localized: "Launch at login did not change"), problem)
-        }
+        launchNote = LoginItem.enable(!LoginItem.isEnabled)
+        // Rebuild in place: the menu is still open, so the tick has to correct itself
+        // under the cursor. Reading the state again also means a refusal leaves the
+        // checkbox where the system actually put it, not where the click aimed.
+        if let menu = statusItem?.menu { menuNeedsUpdate(menu) }
     }
 
     private func item(_ title: String, _ action: Selector, key: String = "") -> NSMenuItem {
