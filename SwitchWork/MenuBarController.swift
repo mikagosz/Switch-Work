@@ -13,11 +13,24 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     private let session = WakeSession.shared
     private var statusItem: NSStatusItem?
 
-    /// Icons built once. The app sits in the menu bar for days on end — there is no
-    /// reason to create an image on every refresh.
+    /// The OFF icon is built once — it never changes. The ON one is redrawn as the
+    /// session runs down, because its fill shows how much time is left.
     private lazy var offIcon: NSImage? = StatusIcon.toggle(isOn: false)
-    private lazy var onIcon: NSImage? = StatusIcon.toggle(isOn: true)
-    private var lastIsOn: Bool?
+
+    /// What the icon currently shows: the state, and the fill rounded to whole percent.
+    ///
+    /// Rounding is what keeps this cheap. Without it every tick would redraw an image
+    /// identical to the one already on screen; with it the icon is rebuilt at most a
+    /// hundred times over the whole session, however long it is.
+    private var ostatniaIkona: (isOn: Bool, procent: Int)?
+
+    /// Redraws the shrinking fill. Only alive while a session runs.
+    ///
+    /// 🔴 Fires every 5 s regardless of session length, and that is deliberate: at one
+    /// tick per percent a two-hour session would refresh every 72 s and the wedge would
+    /// visibly jump. Five seconds is below the eye's threshold for "it moved", and the
+    /// percent check above means most of those ticks cost nothing.
+    private var zegarIkony: Timer?
 
     /// Last refusal from `SMAppService`, shown under the footer until it changes.
     ///
@@ -43,10 +56,17 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     private func refreshIcon() {
         guard let button = statusItem?.button else { return }
         let isOn = session.isOn
-        guard lastIsOn != isOn else { return }
-        lastIsOn = isOn
+        let procent = isOn ? Int((session.progress * 100).rounded()) : 0
 
-        let icon = isOn ? onIcon : offIcon
+        zaplanujOdswiezanie(isOn)
+
+        // Nothing to do when neither the state nor the visible fill has moved.
+        guard ostatniaIkona?.isOn != isOn || ostatniaIkona?.procent != procent else { return }
+        ostatniaIkona = (isOn, procent)
+
+        let icon = isOn
+            ? StatusIcon.toggle(isOn: true, progress: session.progress)
+            : offIcon
         button.image = icon
         // Should the symbol ever fail to load, the button would sit in the menu bar as an
         // empty square: nothing to see, nothing to explain it, and the menu reachable only
@@ -54,6 +74,26 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         button.title = icon == nil
             ? (isOn ? String(localized: "On") : String(localized: "Off"))
             : ""
+    }
+
+    /// Starts the redraw timer with the session and stops it with the session.
+    ///
+    /// A timer ticking while the switch is off would be pure waste: the OFF icon has
+    /// nothing to animate. This app sits in the menu bar for days, so "pure waste" here
+    /// means days of wake-ups for no picture change at all.
+    private func zaplanujOdswiezanie(_ isOn: Bool) {
+        if isOn, zegarIkony == nil {
+            let timer = Timer(timeInterval: 5, repeats: true) { [weak self] _ in
+                Task { @MainActor in self?.refreshIcon() }
+            }
+            // .common, so the icon keeps counting down while a menu is open — the
+            // default mode stalls every timer for as long as the user holds it there.
+            RunLoop.main.add(timer, forMode: .common)
+            zegarIkony = timer
+        } else if !isOn {
+            zegarIkony?.invalidate()
+            zegarIkony = nil
+        }
     }
 
     // MARK: - Menu
@@ -90,6 +130,12 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         screen.state = session.keepScreenOn ? .on : .off
         menu.addItem(screen)
 
+        // Colour of the ON icon. A submenu, because ten entries in the main menu would
+        // bury the two things this app is actually for — turning the block on and off.
+        let kolory = NSMenuItem(title: String(localized: "Icon colour"), action: nil, keyEquivalent: "")
+        kolory.submenu = menuKolorow()
+        menu.addItem(kolory)
+
         menu.addItem(.separator())
 
         // The version belongs somewhere the user actually looks. It used to appear only
@@ -107,6 +153,38 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             note.isEnabled = false
             menu.addItem(note)
         }
+    }
+
+    /// Ten system colours, each with its own swatch.
+    ///
+    /// The swatch is not decoration: "teal" and "cyan" are one word apart in the list and
+    /// worlds apart on screen, and the same goes for indigo against purple. Reading the
+    /// names alone would make choosing a guess.
+    private func menuKolorow() -> NSMenu {
+        let podmenu = NSMenu()
+        let biezacy = IconColor.wybrany
+        for kolor in IconColor.allCases {
+            let pozycja = NSMenuItem(title: kolor.nazwa,
+                                     action: #selector(wybierzKolor(_:)),
+                                     keyEquivalent: "")
+            pozycja.target = self
+            pozycja.representedObject = kolor.rawValue
+            pozycja.image = kolor.probka
+            pozycja.state = kolor == biezacy ? .on : .off
+            podmenu.addItem(pozycja)
+        }
+        return podmenu
+    }
+
+    @objc private func wybierzKolor(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String,
+              let kolor = IconColor(rawValue: raw) else { return }
+        IconColor.ustaw(kolor)
+        // The icon caches what it last drew, so a colour change alone would not repaint
+        // it — the state and the percentage are both unchanged. Dropping the cache is
+        // what makes the new colour show up at once instead of at the next tick.
+        ostatniaIkona = nil
+        refreshIcon()
     }
 
     // MARK: - Stopka

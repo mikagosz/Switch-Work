@@ -21,6 +21,7 @@ swiftc -O -o "$work/check" \
     "$work/main.swift" \
     "$project/SwitchWork/SleepBlock.swift" \
     "$project/SwitchWork/TimeFormat.swift" \
+    "$project/SwitchWork/IconColor.swift" \
     "$project/SwitchWork/StatusIcon.swift" \
     "$project/SwitchWork/WakeSession.swift" \
     "$project/SwitchWork/Defaults.swift"
