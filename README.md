@@ -1,7 +1,14 @@
-# Switch-Work
+<p align="center">
+  <img src="docs/assets/switchwork-icon.png" width="160" alt="Switch-Work app icon">
+</p>
+
+## Switch-Work
 
 A tiny macOS menu bar switch that keeps your Mac awake for a set time, then turns
 itself off.
+
+[![macOS 26+](https://img.shields.io/badge/macOS-26%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Made for laptop work: you leave a long task running — a build, a sync, an agent — walk
 away from the machine, and the Mac falls asleep a minute later and kills it. One click
@@ -9,6 +16,12 @@ on the menu bar icon and it does not, until the time you picked runs out.
 
 - **Off** — a monochrome power outline that follows your menu bar colour.
 - **On** — the same outline in black on a green circle.
+
+<p align="center">
+  <img src="docs/assets/switchwork-hero.png" width="100%" alt="Switch-Work on macOS: the menu bar menu in the off state with the one hour, two hour and custom durations, and in the on state counting down with the icon colour submenu open">
+</p>
+
+---
 
 ## What it blocks
 
