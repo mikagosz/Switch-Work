@@ -10,6 +10,8 @@ itself off.
 [![macOS 26+](https://img.shields.io/badge/macOS-26%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+<a href="https://github.com/sponsors/mikagosz"><img src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?logo=githubsponsors&logoColor=white" width="350" alt="Sponsor on GitHub Sponsors"></a>
+
 Made for laptop work: you leave a long task running — a build, a sync, an agent — walk
 away from the machine, and the Mac falls asleep a minute later and kills it. One click
 on the menu bar icon and it does not, until the time you picked runs out.
