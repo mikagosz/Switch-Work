@@ -20,10 +20,14 @@ enum Defaults {
     /// The stopwatch outline over it. Stored as `OutlineColor.rawValue`.
     static let outlineColor = "outlineColor"
 
-    static let registered: [String: Any] = [
-        keepScreenOn: false,
-        lastMinutes: 60,
-        iconColor: IconColor.green.rawValue,
-        outlineColor: OutlineColor.auto.rawValue,
-    ]
+    /// Computed rather than stored: `[String: Any]` is not `Sendable`, so a stored
+    /// static would be shared mutable state under Swift 6. It is read once, at launch.
+    static var registered: [String: Any] {
+        [
+            keepScreenOn: false,
+            lastMinutes: 60,
+            iconColor: IconColor.green.rawValue,
+            outlineColor: OutlineColor.auto.rawValue,
+        ]
+    }
 }
