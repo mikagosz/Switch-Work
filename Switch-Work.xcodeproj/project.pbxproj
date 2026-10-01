@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B10000000000000000000E1A /* ErrorUpdate in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000E2A /* ErrorUpdate */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B1000000000000000000003A /* Switch-Work.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Switch-Work.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B10000000000000000000E1A /* ErrorUpdate in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = "Switch-Work";
 			packageProductDependencies = (
+				B10000000000000000000E2A /* ErrorUpdate */,
 			);
 			productName = "Switch-Work";
 			productReference = B1000000000000000000003A /* Switch-Work.app */;
@@ -95,6 +101,9 @@
 			);
 			mainGroup = B1000000000000000000005A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B10000000000000000000E3A /* XCRemoteSwiftPackageReference "ErrorUpdate" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B1000000000000000000006A /* Products */;
 			projectDirPath = "";
@@ -220,7 +229,7 @@
 				CODE_SIGN_IDENTITY = 85C274E1928B36D546B36B8462A879E6A97BFC22;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
@@ -231,7 +240,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.3.6;
+				MARKETING_VERSION = 0.3.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mikagosz.SwitchWork;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -247,7 +256,7 @@
 				CODE_SIGN_IDENTITY = 85C274E1928B36D546B36B8462A879E6A97BFC22;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -258,7 +267,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.3.6;
+				MARKETING_VERSION = 0.3.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mikagosz.SwitchWork;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -288,6 +297,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B10000000000000000000E3A /* XCRemoteSwiftPackageReference "ErrorUpdate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mikagosz/ErrorUpdate.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B10000000000000000000E2A /* ErrorUpdate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B10000000000000000000E3A /* XCRemoteSwiftPackageReference "ErrorUpdate" */;
+			productName = ErrorUpdate;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B1000000000000000000001A /* Project object */;
 }

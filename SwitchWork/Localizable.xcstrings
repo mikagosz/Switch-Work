@@ -1,6 +1,23 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "A newer version is available": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A newer version is available"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jest nowsza wersja"
+          }
+        }
+      }
+    },
     "Automatic": {
       "extractionState": "manual",
       "localizations": {
@@ -120,6 +137,57 @@
         }
       }
     },
+    "Check for Updates…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprawdź aktualizacje…"
+          }
+        }
+      }
+    },
+    "Check for updates once a month": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for updates once a month"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprawdzaj aktualizacje raz w miesiącu"
+          }
+        }
+      }
+    },
+    "Close": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zamknij"
+          }
+        }
+      }
+    },
     "Could not change the setting: %@": {
       "extractionState": "manual",
       "localizations": {
@@ -137,6 +205,57 @@
         }
       }
     },
+    "Could not check for updates": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not check for updates"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się sprawdzić aktualizacji"
+          }
+        }
+      }
+    },
+    "Could not download the new version.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not download the new version."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się pobrać nowej wersji."
+          }
+        }
+      }
+    },
+    "Could not install the new version. The app keeps running the current one.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not install the new version. The app keeps running the current one."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się zainstalować nowej wersji. Program działa dalej w obecnej."
+          }
+        }
+      }
+    },
     "Cyan": {
       "extractionState": "manual",
       "localizations": {
@@ -150,6 +269,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cyjan"
+          }
+        }
+      }
+    },
+    "Download manually and replace it yourself": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download manually and replace it yourself"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pobierz ręcznie i podmień sam"
+          }
+        }
+      }
+    },
+    "Downloading and verifying the package…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloading and verifying the package…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pobieram i sprawdzam paczkę…"
           }
         }
       }
@@ -252,6 +405,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Indygo"
+          }
+        }
+      }
+    },
+    "Install and Restart": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install and Restart"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstaluj i uruchom ponownie"
+          }
+        }
+      }
+    },
+    "Installing — the app will restart in a moment…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installing — the app will restart in a moment…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instaluję — za chwilę program uruchomi się ponownie…"
           }
         }
       }
@@ -511,6 +698,40 @@
         }
       }
     },
+    "Skip This Version": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip This Version"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomiń tę wersję"
+          }
+        }
+      }
+    },
+    "Switch-Work is keeping the Mac awake — the restart would end that. Turn it off first, then click again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work is keeping the Mac awake — the restart would end that. Turn it off first, then click again."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work trzyma Maca w czuwaniu — restart by to przerwał. Najpierw go wyłącz, potem kliknij ponownie."
+          }
+        }
+      }
+    },
     "Switch-Work is off": {
       "extractionState": "manual",
       "localizations": {
@@ -579,6 +800,23 @@
         }
       }
     },
+    "Switch-Work — Update": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work — Update"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch-Work — Aktualizacja"
+          }
+        }
+      }
+    },
     "Teal": {
       "extractionState": "manual",
       "localizations": {
@@ -630,6 +868,23 @@
         }
       }
     },
+    "The app downloads the new version, checks it, replaces itself and restarts. Your settings stay.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app downloads the new version, checks it, replaces itself and restarts. Your settings stay."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Program pobierze nową wersję, sprawdzi ją, podmieni się i uruchomi ponownie. Ustawienia zostają."
+          }
+        }
+      }
+    },
     "The app signature does not allow registration. Move Switch-Work to Applications and launch it from there.": {
       "extractionState": "manual",
       "localizations": {
@@ -643,6 +898,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Podpis aplikacji nie pozwala na rejestrację. Przenieś Switch-Work do Programów i uruchom stamtąd."
+          }
+        }
+      }
+    },
+    "The app sits where it cannot be overwritten (e.g. opened straight from Downloads). Move it to the Applications folder or download the new version manually.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app sits where it cannot be overwritten (e.g. opened straight from Downloads). Move it to the Applications folder or download the new version manually."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Program stoi w miejscu, którego nie da się nadpisać (np. otwarty prosto z Pobranych). Przenieś go do katalogu Aplikacje albo pobierz nową wersję ręcznie."
+          }
+        }
+      }
+    },
+    "The new version is installed, but the restart failed. Quit and reopen the app manually.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The new version is installed, but the restart failed. Quit and reopen the app manually."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nowa wersja jest zainstalowana, ale restart się nie udał. Zamknij i otwórz program ręcznie."
+          }
+        }
+      }
+    },
+    "The package address leads outside fractal8.eu — the app will not download it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The package address leads outside fractal8.eu — the app will not download it."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adres paczki prowadzi poza serwer fractal8.eu — program jej nie pobierze."
           }
         }
       }
@@ -749,6 +1055,23 @@
         }
       }
     },
+    "Version %@.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wersja %@."
+          }
+        }
+      }
+    },
     "Waiting for your approval in System Settings → General → Login Items.": {
       "extractionState": "manual",
       "localizations": {
@@ -796,6 +1119,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Żółty"
+          }
+        }
+      }
+    },
+    "You are up to date": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You are up to date"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masz najnowszą wersję"
+          }
+        }
+      }
+    },
+    "You have %@, version %@ is available.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have %@, version %@ is available."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masz %@, dostępna jest %@."
           }
         }
       }

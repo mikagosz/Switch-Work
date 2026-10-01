@@ -142,6 +142,13 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
         menu.addItem(.separator())
 
+        menu.addItem(item(String(localized: "Check for Updates…"), #selector(checkForUpdates)))
+        let automatic = item(String(localized: "Check for updates once a month"), #selector(toggleUpdateChecks))
+        automatic.state = Updates.shared.enabled ? .on : .off
+        menu.addItem(automatic)
+
+        menu.addItem(.separator())
+
         // The version belongs somewhere the user actually looks. It used to appear only
         // inside the "my own time" prompt, which meant reading it required opening a
         // dialog about something else — so in practice nobody ever saw it.
@@ -309,6 +316,14 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             String(localized: "Part of the block was refused"),
             String(format: String(localized: "The Mac will stay awake, but macOS refused: %@"), names)
         )
+    }
+
+    @objc private func checkForUpdates() {
+        Task { await Updates.shared.check(manually: true) }
+    }
+
+    @objc private func toggleUpdateChecks() {
+        Updates.shared.enabled.toggle()
     }
 
     @objc private func quit() {

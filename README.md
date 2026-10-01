@@ -56,8 +56,8 @@ sleep settings could die halfway and leave your Mac unable to sleep at all.
 ## Menu
 
 State line (`Switch-Work is off` / `Awake — 1 hr 47 min left`), then `Turn off now` while
-running, three durations — **1 hour, 2 hours, my own time…** — the screen option, and
-`Quit`. Picking a duration while already running moves the deadline instead of starting
+running, three durations — **1 hour, 2 hours, my own time…** — the screen option, the icon colours,
+`Check for Updates…` with `Check for updates once a month`, and `Quit`. Picking a duration while already running moves the deadline instead of starting
 over, which is why those items read "Set to…" then.
 
 If macOS refuses a block, the app says so in an alert. A silent refusal would be the
@@ -65,15 +65,29 @@ worst outcome: a glowing icon over a Mac that sleeps anyway.
 
 ## Requirements
 
-macOS 26.0 or newer. No network access, no analytics, no files written outside
-`UserDefaults` (two keys: the screen option and the last custom duration).
+macOS 26.0 or newer. No analytics, no files written outside `UserDefaults`.
+
+## Updates
+
+Once a month the app asks `downloads.fractal8.eu/Switch-Work/api/error-update/version-check`
+for the newest version number — that request is its only network access, and it sends nothing
+else. The check runs through [ErrorUpdate](https://github.com/mikagosz/ErrorUpdate) 1.0.1, with
+crash reporting off. A newer version opens a window with `Install and Restart`, `Skip This
+Version` and a manual download; nothing installs until you click. The installer checks the
+package's SHA-256 and requires the new app to meet the running one's code signature
+requirement, and it refuses while a wake session runs, because the restart would end it.
+`Check for updates once a month` in the menu turns the monthly check off; `Check for Updates…`
+asks at once either way.
 
 ## Build
 
 ```bash
 xcodebuild -project Switch-Work.xcodeproj -scheme Switch-Work -configuration Release \
-    CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO build
+    -destination 'generic/platform=macOS' CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO build
 ```
+
+`-destination 'generic/platform=macOS'` builds for both Apple silicon and Intel; without it
+the build only covers the Mac it runs on.
 
 `CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO` is not decoration. Without it, `xcodebuild … build`
 signs the app with `com.apple.security.get-task-allow` **even in Release** — the entitlement

@@ -28,6 +28,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         UserDefaults.standard.register(defaults: Defaults.registered)
         menuBar = MenuBarController()
+        // The restart after an update would end a running wake session.
+        Updates.shared.isBusy = { WakeSession.shared.isOn }
+        Updates.shared.start()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
