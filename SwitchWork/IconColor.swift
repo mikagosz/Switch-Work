@@ -10,14 +10,14 @@ import AppKit
 /// The palette offered in the menu, and the one currently in force.
 ///
 /// > [!info] Why a fixed list and not a colour picker
-/// > [U], 2026-09-04: *„chcę z 10 głównych kolorów"*. A picker would also let the user
+/// > 2026-09-04: ten main colours. A picker would also let the user
 /// > land on something invisible — dark grey in dark mode, pale yellow in light. Every
 /// > entry here is a **system** colour, which means macOS itself adjusts it for light and
 /// > dark appearance and for increased contrast. The user picks a hue; the system keeps
 /// > it legible.
 ///
 /// > [!important] Green stays the default
-/// > [U] in the same breath: *„domyślnie zostawiamy zielony"*. `.green` is first in the
+/// > Green stays the default. `.green` is first in the
 /// > list and is what a fresh install uses; nothing here changes for somebody who never
 /// > opens the submenu.
 nonisolated enum IconColor: String, CaseIterable, Sendable {
@@ -88,10 +88,10 @@ nonisolated enum IconColor: String, CaseIterable, Sendable {
     }
 }
 
-/// The colour of the stopwatch outline drawn over the disc.
+/// The colour of the bar and the faint track of the power ring.
 ///
 /// > [!info] Why three options and not two
-/// > [U], 2026-09-04: *„daj mi wybór między białym i czarnym konturem"*. Both are here —
+/// > 2026-09-04: a choice between a white and a black outline. Both are here —
 /// > and so is the behaviour they replace, as the default. Dropping it would be a step
 /// > back for anybody who switches appearance during the day: a fixed white outline
 /// > disappears into a light menu bar and a fixed black one into a dark one. `.auto`

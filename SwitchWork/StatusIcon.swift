@@ -17,75 +17,64 @@ enum StatusIcon {
     /// menu and this file.
     static var onColor: NSColor { IconColor.wybrany.nsColor }
 
-    /// The box the icon is drawn in, and the diameter of the countdown disc.
+    /// The box the icon is drawn in.
     ///
-    /// [U], 2026-09-04: *„niech kula czasu ma 19pt a kontur 17pt"*.
+    /// 19 pt since 2026-09-04. The stopwatch is gone, the box
+    /// stayed — so the icon does not nudge its neighbours on the menu bar after the update.
     static let pointSize: CGFloat = 19
 
-    /// The stopwatch outline, drawn two points smaller than the disc behind it.
+    /// The power ring: radius and stroke, in points, inside `pointSize`.
     ///
-    /// The gap is the point: at the same size the outline would sit exactly on the disc's
-    /// rim and the two edges would fight each other. Two points in means the coloured
-    /// disc reads as a background and the stopwatch as a thing standing on it.
-    static let outlineSize: CGFloat = 17
+    /// Measured off the prototype picked on 2026-10-22, drawn at the same 19 pt.
+    static let ringRadius: CGFloat = 7.3
+    static let lineWidth: CGFloat = 1.9
+
+    /// The coloured part of the ring is a hair thicker than the rest, so it covers the
+    /// grey track under it completely instead of leaving a fringe on both edges.
+    static let fillWidth: CGFloat = 2.3
+
+    /// Half the gap at the top of the ring where the bar stands, in degrees.
+    static let gapHalf: CGFloat = 38
 
     // MARK: - The icon
 
-    /// The stopwatch: a coloured disc that empties with the session, under a black or
-    /// white outline.
+    /// The power symbol: a ring that empties with the session, and a bar through its gap.
     ///
-    /// > [!important] The outline is NEVER coloured
-    /// > [U], 2026-09-04, after seeing a green outline: *„kontur ma zostać czarny albo
-    /// > biały"*, then: *„daj mi wybór między białym i czarnym"*. `OutlineColor` holds
+    /// > [!important] The bar and the track are NEVER coloured
+    /// > 2026-09-04, after a green outline was tried: the outline stays black or
+    /// > white, and the choice between them is the user's. `OutlineColor` holds
     /// > that choice; its default follows the appearance, so a fixed white outline does
     /// > not vanish into a light menu bar for somebody who never opens the submenu.
+    /// > Only the part of the ring still ahead takes the user's colour.
     ///
-    /// > [!important] The outline must not change size between states
-    /// > Both states draw the same symbol at `outlineSize`. The tempting pairing —
-    /// > `timer` for off and `timer.circle.fill` for on — redraws the stopwatch smaller
-    /// > to fit inside a disc, so the glyph would jump on every toggle.
+    /// > [!important] The symbol must not change size between states
+    /// > Both states draw the same ring and the same bar in the same box — only the
+    /// > paint changes. Since 2026-09-04: a green icon keeps its full outline.
     ///
-    /// > [!info] The disc shrinks with the remaining time
-    /// > [U]: *„zrobisz aby wypełnienie się kurczyło jak czas stopera?"*. A full disc
-    /// > means the whole stretch is ahead; it empties clockwise from twelve, and the last
-    /// > minutes leave a thin wedge. The icon answers *how much longer* without the menu.
+    /// > [!info] The ring disappears with the remaining time
+    /// > 2026-10-22: a menu bar icon in which this bar runs out.
+    /// > A full coloured ring means the whole stretch is ahead; it retracts clockwise
+    /// > towards the bar, and the last minutes leave a short stub right of it. The used
+    /// > part stays as a faint track, so the ring keeps its shape.
     ///
     /// - Parameter progress: share of the session still ahead, `0…1`. Ignored when off.
     static func toggle(isOn: Bool, progress: Double = 1) -> NSImage? {
         let label = isOn
             ? String(localized: "Switch-Work is on")
             : String(localized: "Switch-Work is off")
-
-        let podstawa = NSImage.SymbolConfiguration(pointSize: outlineSize, weight: .regular)
-        // 🔴 The outline takes its colour from the CONFIGURATION, not from painting over
-        // the finished image. The first attempt filled the outline's frame with
-        // `.sourceAtop`, which lands on every non-transparent pixel underneath — so it
-        // repainted the coloured disc as well and the icon came out with no colour at
-        // all. Harness/T2 measured zero coloured pixels at every fill level.
-        // `paletteColors`, not `hierarchicalColor`: the hierarchical variant dims the
-        // symbol's secondary layers to a grey, and [U] asked for black or white —
-        // the dimmed ring was visible next to the crisp OFF icon in the same render.
-        let konturConf = podstawa.applying(
-            NSImage.SymbolConfiguration(paletteColors: [OutlineColor.wybrany.nsColor]))
-        guard let konturKolorowy = NSImage(systemSymbolName: "timer", accessibilityDescription: label)?
-            .withSymbolConfiguration(konturConf),
-              let konturSzablon = NSImage(systemSymbolName: "timer", accessibilityDescription: label)?
-            .withSymbolConfiguration(podstawa)
-        else { return nil }
-
-        // The box is exactly the disc's size in both states, so switching does not nudge
-        // the icon sideways. A 17 pt symbol reports a box slightly wider than 17, so the
-        // outline is centred inside these 19 rather than setting the size itself.
         let pudlo = NSSize(width: pointSize, height: pointSize)
 
         guard isOn else {
             // OFF stays a template: the menu bar paints it black or white by itself,
             // and it keeps following the appearance without the app being told.
             let puste = NSImage(size: pudlo, flipped: false) { _ in
-                rysujKontur(konturSzablon, w: pudlo)
+                NSColor.black.setStroke()
+                pierscien(in: pudlo, udzial: 1, grubosc: lineWidth).stroke()
+                kreska(in: pudlo).stroke()
                 return true
             }
             puste.isTemplate = true
+            puste.accessibilityDescription = label
             return puste
         }
 
@@ -95,59 +84,57 @@ enum StatusIcon {
         // point — and on a Retina menu bar that gets scaled up and turns soft. The
         // handler is called again for every scale the system needs.
         let obraz = NSImage(size: pudlo, flipped: false) { _ in
-            if progress > 0 {
-                NSGraphicsContext.current?.saveGraphicsState()
-                wedge(in: pudlo, progress: progress).addClip()
-                onColor.setFill()
-                kula(in: pudlo).fill()
-                NSGraphicsContext.current?.restoreGraphicsState()
-            }
-
             // Black or white: `labelColor` is resolved against whatever appearance is
             // drawing us, and the handler runs again whenever that changes.
-            rysujKontur(konturKolorowy, w: pudlo)
+            let kontur = OutlineColor.wybrany.nsColor
+
+            kontur.withAlphaComponent(0.22).setStroke()
+            pierscien(in: pudlo, udzial: 1, grubosc: lineWidth).stroke()
+
+            let udzial = min(1, max(0, progress))
+            if udzial > 0 {
+                onColor.setStroke()
+                pierscien(in: pudlo, udzial: udzial, grubosc: fillWidth).stroke()
+            }
+
+            kontur.setStroke()
+            kreska(in: pudlo).stroke()
             return true
         }
         obraz.isTemplate = false
+        obraz.accessibilityDescription = label
         return obraz
-    }
-
-    // MARK: - Drawing
-
-    /// Puts the outline in the middle of the box, whatever the two sizes work out to.
-    private static func rysujKontur(_ kontur: NSImage, w pudlo: NSSize) {
-        let ramka = NSRect(x: (pudlo.width - kontur.size.width) / 2,
-                           y: (pudlo.height - kontur.size.height) / 2,
-                           width: kontur.size.width, height: kontur.size.height)
-        kontur.draw(in: ramka, from: .zero, operation: .sourceOver, fraction: 1)
     }
 
     // MARK: - Geometry
 
-    /// The countdown disc — the full `pointSize` across, minus a hair so its antialiased
-    /// edge does not clip against the box.
-    private static func kula(in size: NSSize) -> NSBezierPath {
-        let promien = min(size.width, size.height) / 2 - 0.5
-        let srodek = NSPoint(x: size.width / 2, y: size.height / 2)
-        return NSBezierPath(ovalIn: NSRect(x: srodek.x - promien, y: srodek.y - promien,
-                                           width: promien * 2, height: promien * 2))
-    }
-
-    /// The wedge still to run, drawn clockwise from twelve o'clock.
+    /// The ring from the right edge of the gap, clockwise, for `udzial` of its length.
     ///
-    /// Clockwise and from the top, because that is how every countdown dial a person has
-    /// ever seen behaves — the opposite direction reads as filling up, not running out.
-    private static func wedge(in size: NSSize, progress: Double) -> NSBezierPath {
+    /// Clockwise and anchored at the bar, because that is how a countdown dial runs —
+    /// the end that moves is the one coming back round towards twelve o'clock.
+    private static func pierscien(in size: NSSize, udzial: Double, grubosc: CGFloat) -> NSBezierPath {
         let srodek = NSPoint(x: size.width / 2, y: size.height / 2)
-        let promien = max(size.width, size.height)  // only clips; the disc gives the shape
+        let rozpietosc = 360 - 2 * gapHalf
+        let start = 90 - gapHalf  // AppKit counts degrees anticlockwise from three o'clock
 
         let sciezka = NSBezierPath()
-        sciezka.move(to: srodek)
-        sciezka.appendArc(withCenter: srodek, radius: promien,
-                          startAngle: 90,
-                          endAngle: 90 - 360 * CGFloat(min(1, max(0, progress))),
+        sciezka.appendArc(withCenter: srodek, radius: ringRadius,
+                          startAngle: start,
+                          endAngle: start - rozpietosc * CGFloat(udzial),
                           clockwise: true)
-        sciezka.close()
+        sciezka.lineWidth = grubosc
+        sciezka.lineCapStyle = .round
+        return sciezka
+    }
+
+    /// The bar through the gap, from near the top of the box down to just past the middle.
+    private static func kreska(in size: NSSize) -> NSBezierPath {
+        let x = size.width / 2
+        let sciezka = NSBezierPath()
+        sciezka.move(to: NSPoint(x: x, y: size.height - 1.6))
+        sciezka.line(to: NSPoint(x: x, y: size.height / 2 + 0.1))
+        sciezka.lineWidth = lineWidth
+        sciezka.lineCapStyle = .round
         return sciezka
     }
 }

@@ -230,7 +230,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     /// One row holding both footer controls, the way TokenTime does it.
     ///
     /// > [!info] Why a custom view and not two menu items
-    /// > [U] asked for exactly this bar on 2026-09-04, pointing at TokenTime. There it
+    /// > This bar dates from 2026-09-04, modelled on TokenTime. There it
     /// > is SwiftUI inside a `MenuBarExtra`; here the whole menu is `NSMenu`, and a plain
     /// > `NSMenuItem` cannot hold two controls side by side. A view can.
     /// >
@@ -339,7 +339,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     /// > [!info] The build number is deliberately not here
     /// > It used to read "Switch-Work 0.3.0 (build 2)". `CFBundleVersion` matters to
     /// > macOS when it has to tell two copies of the same release apart; it tells the
-    /// > person reading the menu nothing. [U] asked for the plain line on 2026-09-04.
+    /// > person reading the menu nothing. The plain line dates from 2026-09-04.
     private var versionLine: String? {
         guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         else { return nil }

@@ -17,7 +17,7 @@ enum Defaults {
     /// Which colour the ON icon is painted with. Stored as `IconColor.rawValue`.
     static let iconColor = "iconColor"
 
-    /// The stopwatch outline over it. Stored as `OutlineColor.rawValue`.
+    /// The bar and track of the power ring. Stored as `OutlineColor.rawValue`.
     static let outlineColor = "outlineColor"
 
     /// Look for a newer version once a month (`Updates`). Registered in `Updates`.

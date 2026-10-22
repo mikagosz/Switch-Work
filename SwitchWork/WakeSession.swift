@@ -44,7 +44,7 @@ final class WakeSession {
     ///
     /// Clamped on both ends: the deadline timer has a second of slack, so `remaining`
     /// can briefly exceed the total after a change, and a fill drawn past full would
-    /// wrap around to an empty disc — the exact opposite of what it means.
+    /// wrap around to an empty ring — the exact opposite of what it means.
     var progress: Double {
         guard isOn, totalDuration > 0 else { return 0 }
         return min(1, max(0, remaining / totalDuration))

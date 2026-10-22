@@ -2,10 +2,9 @@ import AppKit
 
 // Harness T2 — does the icon keep the SAME outline when it turns green?
 //
-// [U], 2026-09-04: "jak zielony to nie zmniejszaj konturu ikony". The tempting pairing
-// `timer` + `timer.circle.fill` breaks exactly that — the filled variant redraws the
-// stopwatch smaller so it fits inside a disc, and the glyph jumps in size on every
-// toggle. Both states now use `timer`, and only the colour changes.
+// Since 2026-09-04: a green icon keeps its full outline. Since 2026-10-22 the
+// icon is a power symbol whose coloured ring runs out with the session; both states draw
+// the same ring and bar in the same box, and only the paint changes.
 //
 // So this check counts PIXELS of the finished images and compares the two states'
 // shapes against each other. Reading the configuration would not catch a symbol that
@@ -81,7 +80,7 @@ check("OFF carries no green", offPixels.green == 0)
 check("OFF draws something", offPixels.black + offPixels.other > 20)
 
 // --- THE OUTLINE MUST NOT SHRINK --------------------------------------------
-// [U]'s requirement, and the reason both states share one symbol at one point size.
+// The requirement, and the reason both states share one symbol at one point size.
 //
 // 🔴 Compared by SIZE, not by ink. An earlier version of this check counted lit pixels
 // of both images scaled to 64×64 and "failed" at 96 against 580 — but it was comparing
@@ -90,10 +89,10 @@ check("OFF draws something", offPixels.black + offPixels.other > 20)
 // here: same symbol, same point size, same box means the outline cannot have shrunk.
 checkEqual("ON and OFF are the same size — the outline cannot shrink",
            on?.size, off?.size)
-checkEqual("the box is the disc size [U] asked for",
+checkEqual("the box is the requested size",
            on?.size.height.rounded(), StatusIcon.pointSize)
-check("the outline is drawn smaller than the disc",
-      StatusIcon.outlineSize < StatusIcon.pointSize)
+check("the ring with its stroke fits inside the box",
+      (StatusIcon.ringRadius + StatusIcon.fillWidth / 2) * 2 < StatusIcon.pointSize)
 
 // --- THE FILL SHRINKS WITH THE REMAINING TIME -------------------------------
 var poprzedni = Int.max
@@ -114,11 +113,10 @@ print("  CONTROL: green full \(pelnyGreen) vs empty \(pustyGreen)")
 check("the counter can tell a full dial from an empty one", pelnyGreen > pustyGreen * 2)
 
 // --- SIZE -------------------------------------------------------------------
-checkEqual("the disc is 19 pt", StatusIcon.pointSize, 19)
-checkEqual("the outline is 17 pt", StatusIcon.outlineSize, 17)
+checkEqual("the icon is 19 pt", StatusIcon.pointSize, 19)
 
 // --- THE COLOUR IS THE USER'S ------------------------------------------------
-// [U], 2026-09-04: ten colours to choose from, green until chosen.
+// Since 2026-09-04: ten colours to choose from, green until chosen.
 checkEqual("there are ten colours to pick from", IconColor.allCases.count, 10)
 checkEqual("green is first, so it is what a fresh install shows", IconColor.allCases.first, .green)
 
@@ -137,7 +135,7 @@ check("the red icon carries no green at all", czerwona.green == 0)
 check("the red icon still draws something", czerwona.other > 100)
 
 // --- THE OUTLINE COLOUR IS ALSO THE USER'S ----------------------------------
-// [U], 2026-09-04: "daj mi wybór między białym i czarnym konturem".
+// Since 2026-09-04: a choice between a white and a black outline.
 IconColor.ustaw(.green)
 UserDefaults.standard.removeObject(forKey: Defaults.outlineColor)
 checkEqual("with nothing stored the outline follows the appearance", OutlineColor.wybrany, .auto)
@@ -152,10 +150,10 @@ print("  white outline: black \(bialy.black), other \(bialy.other)")
 print("  black outline: black \(czarny.black), other \(czarny.other)")
 check("a black outline puts black pixels on the icon", czarny.black > 50)
 check("a white outline does not", bialy.black < czarny.black / 2)
-check("the disc keeps its colour either way",
+check("the ring keeps its colour either way",
       bialy.green > 100 && czarny.green > 100)
 
-// Leave the machine as it was found — this check runs on [U]'s Mac.
+// Leave the machine as it was found — this check runs on a real Mac.
 UserDefaults.standard.removeObject(forKey: Defaults.iconColor)
 UserDefaults.standard.removeObject(forKey: Defaults.outlineColor)
 checkEqual("the check put the icon colour back", IconColor.wybrany, .green)

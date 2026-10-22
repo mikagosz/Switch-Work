@@ -24,7 +24,7 @@ func napis(_ t: String, _ x: CGFloat, _ y: CGFloat, _ r: CGFloat, _ k: NSColor) 
         .font: NSFont.systemFont(ofSize: r, weight: .medium), .foregroundColor: k])
 }
 
-napis("Kula czasu \(Int(StatusIcon.pointSize)) pt · kontur \(Int(StatusIcon.outlineSize)) pt, czarny albo bialy",
+napis("Pierscien \(Int(StatusIcon.pointSize)) pt · kreska i slad czarne albo biale",
       16, H - 26, 13, .white)
 
 // Dwa paski: jasny i ciemny
