@@ -67,7 +67,16 @@ enum StatusIcon {
         guard isOn else {
             // OFF stays a template: the menu bar paints it black or white by itself,
             // and it keeps following the appearance without the app being told.
+            //
+            // Upside down, bar at the bottom. Since 2026-10-22, when the icon was hard to spot on the
+            // menu bar: turn it over while the timer is off — an ordinary power symbol
+            // reads as one more system glyph, a flipped one says „off" at a glance.
+            // Rotated whole, so the box and the stroke stay the same.
             let puste = NSImage(size: pudlo, flipped: false) { _ in
+                let obrot = NSAffineTransform()
+                obrot.translateX(by: pudlo.width, yBy: pudlo.height)
+                obrot.rotate(byDegrees: 180)
+                obrot.concat()
                 NSColor.black.setStroke()
                 pierscien(in: pudlo, udzial: 1, grubosc: lineWidth).stroke()
                 kreska(in: pudlo).stroke()
