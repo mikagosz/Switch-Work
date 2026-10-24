@@ -113,7 +113,7 @@ print("  CONTROL: green full \(pelnyGreen) vs empty \(pustyGreen)")
 check("the counter can tell a full dial from an empty one", pelnyGreen > pustyGreen * 2)
 
 // --- SIZE -------------------------------------------------------------------
-checkEqual("the icon is 30 pt", StatusIcon.pointSize, 30)
+checkEqual("the icon is 28 pt", StatusIcon.pointSize, 28)
 check("the ziomek mask loads", StatusIcon.maska != nil)
 
 // --- THE COLOUR IS THE USER'S ------------------------------------------------

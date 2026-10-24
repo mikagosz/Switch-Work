@@ -21,14 +21,15 @@ enum StatusIcon {
     ///
     /// 19 pt since 2026-09-04. On 2026-10-24, with the ziomek in
     /// the ring: 30 pt and a larger figure inside the ring — the MacBook's
-    /// menu bar is 34 pt tall (measured that day), so 30 pt still leaves 2 pt above and below.
-    static let pointSize: CGFloat = 30
+    /// menu bar is 34 pt tall (measured that day). Then, after seeing 30 pt on the bar:
+    /// 2 pt smaller — 28 pt, 3 pt free above and below.
+    static let pointSize: CGFloat = 28
 
     /// The ring: radius and stroke, in points, inside `pointSize`.
     ///
     /// The stroke stayed at the 2 pt approved at 22 pt; the radius is the largest that keeps
     /// the coloured part inside the box.
-    static let ringRadius: CGFloat = 13.7
+    static let ringRadius: CGFloat = 12.7
     static let lineWidth: CGFloat = 2
 
     /// The coloured part of the ring is a hair thicker than the rest, so it covers the
