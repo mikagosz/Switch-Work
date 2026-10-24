@@ -55,11 +55,12 @@ enum StatusIcon {
         return NSBitmapImageRep(data: data)?.cgImage
     }()
 
-    /// The circle of the drawing that goes inside the ring, in its pixels (y down). The figure
-    /// is larger than the ring's inside, so the bottom of his back and a corner of the lid
-    /// are cut by it — as on the approved preview.
-    static let maskaSrodek = NSPoint(x: 540, y: 525)
-    static let maskaPromien: CGFloat = 480
+    /// The circle of the drawing that goes inside the ring, in its pixels (y down): the
+    /// smallest one holding every white pixel (measured: centre 488, 636, radius 523) plus a
+    /// hair, so the whole figure fits. On 2026-10-24 version 0.3.10 at radius 480
+    /// cut the figure at the sides.
+    static let maskaSrodek = NSPoint(x: 488, y: 636)
+    static let maskaPromien: CGFloat = 540
 
     /// The lid in the drawing's pixels — only this part of the figure turns blue.
     static let klapa: [NSPoint] = [NSPoint(x: 680, y: 940), NSPoint(x: 806, y: 608),

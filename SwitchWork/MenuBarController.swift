@@ -41,7 +41,9 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     override init() {
         super.init()
 
-        let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        // Variable, not square: `squareLength` is the bar's nominal 22 pt, and the 30 pt ring
+        // lost 4 pt on each side to it — on 2026-10-24 it cut the figure at the sides.
+        let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
