@@ -2,9 +2,9 @@ import AppKit
 
 // Harness T2 — does the icon keep the SAME outline when it turns green?
 //
-// Since 2026-09-04: a green icon keeps its full outline. Since 2026-10-22 the
-// icon is a power symbol whose coloured ring runs out with the session; both states draw
-// the same ring and bar in the same box, and only the paint changes.
+// Since 2026-09-04: a green icon keeps its full outline. Since 2026-10-24 the
+// icon is the ziomek at a laptop inside a ring that runs out with the session; both
+// states draw the same ring and figure in the same box, and only the paint changes.
 //
 // So this check counts PIXELS of the finished images and compares the two states'
 // shapes against each other. Reading the configuration would not catch a symbol that
@@ -84,7 +84,7 @@ check("OFF draws something", offPixels.black + offPixels.other > 20)
 //
 // 🔴 Compared by SIZE, not by ink. An earlier version of this check counted lit pixels
 // of both images scaled to 64×64 and "failed" at 96 against 580 — but it was comparing
-// a system symbol, which scales as a vector, against an image drawn at 19 pt and then
+// a system symbol, which scales as a vector, against an image drawn at a few points and then
 // blown up. The icon was fine; the measurement was not. Size is the honest question
 // here: same symbol, same point size, same box means the outline cannot have shrunk.
 checkEqual("ON and OFF are the same size — the outline cannot shrink",
@@ -113,7 +113,8 @@ print("  CONTROL: green full \(pelnyGreen) vs empty \(pustyGreen)")
 check("the counter can tell a full dial from an empty one", pelnyGreen > pustyGreen * 2)
 
 // --- SIZE -------------------------------------------------------------------
-checkEqual("the icon is 19 pt", StatusIcon.pointSize, 19)
+checkEqual("the icon is 30 pt", StatusIcon.pointSize, 30)
+check("the ziomek mask loads", StatusIcon.maska != nil)
 
 // --- THE COLOUR IS THE USER'S ------------------------------------------------
 // Since 2026-09-04: ten colours to choose from, green until chosen.
