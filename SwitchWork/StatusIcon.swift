@@ -40,6 +40,12 @@ enum StatusIcon {
     /// laptop screen turns blue — blue whatever colour the ring is.
     static let screenColor: NSColor = .systemBlue
 
+    /// The cap and the hoodie while the session runs. Since 2026-10-24 the
+    /// cap turns red and the hoodie violet — like the lid, whatever colour the ring is.
+    /// The hoodie's shade picked from eight samples the same day: indigo.
+    static let capColor: NSColor = .systemRed
+    static let hoodieColor: NSColor = .systemIndigo
+
     // MARK: - The ziomek
 
     /// The original drawing (`ziomek.png`, 1024 × 1024, corrected by hand on 2026-10-24),
@@ -63,9 +69,22 @@ enum StatusIcon {
     static let maskaSrodek = NSPoint(x: 488, y: 636)
     static let maskaPromien: CGFloat = 540
 
-    /// The lid in the drawing's pixels — only this part of the figure turns blue.
+    /// The lid in the drawing's pixels — it turns blue.
     static let klapa: [NSPoint] = [NSPoint(x: 680, y: 940), NSPoint(x: 806, y: 608),
                                    NSPoint(x: 1020, y: 608), NSPoint(x: 905, y: 940)]
+
+    /// The cap with its brim, in the drawing's pixels. The lower edge runs through the
+    /// black gap between the cap and the hair (measured: the cap ends at y 367 on the left).
+    static let czapka: [NSPoint] = [NSPoint(x: 300, y: 90), NSPoint(x: 870, y: 90),
+                                    NSPoint(x: 870, y: 392), NSPoint(x: 712, y: 392),
+                                    NSPoint(x: 712, y: 366), NSPoint(x: 300, y: 370)]
+
+    /// The hoodie with the sleeve, up to the hand and the keyboard; the neck stays out.
+    static let bluza: [NSPoint] = [NSPoint(x: 20, y: 470), NSPoint(x: 330, y: 470),
+                                   NSPoint(x: 395, y: 600), NSPoint(x: 440, y: 640),
+                                   NSPoint(x: 455, y: 760), NSPoint(x: 495, y: 785),
+                                   NSPoint(x: 485, y: 875), NSPoint(x: 408, y: 882),
+                                   NSPoint(x: 400, y: 935), NSPoint(x: 20, y: 935)]
 
     // MARK: - The icon
 
@@ -76,8 +95,8 @@ enum StatusIcon {
     /// > white, and the choice between them is the user's. `OutlineColor` holds
     /// > that choice; its default follows the appearance, so a fixed white outline does
     /// > not vanish into a light menu bar for somebody who never opens the submenu.
-    /// > Only the part of the ring still ahead takes the user's colour, and only the lid
-    /// > turns blue.
+    /// > Only the part of the ring still ahead takes the user's colour; the lid turns
+    /// > blue, the cap red and the hoodie purple.
     ///
     /// > [!important] The symbol must not change size between states
     /// > Both states draw the same ring and the same figure in the same box — only the
@@ -103,7 +122,7 @@ enum StatusIcon {
             let puste = NSImage(size: pudlo, flipped: false) { _ in
                 NSColor.black.setStroke()
                 pierscien(in: pudlo, udzial: 1, grubosc: lineWidth).stroke()
-                ziomek(in: pudlo, kontur: .black, ekran: nil)
+                ziomek(in: pudlo, kontur: .black, strefy: [])
                 return true
             }
             puste.isTemplate = true
@@ -130,7 +149,8 @@ enum StatusIcon {
                 pierscien(in: pudlo, udzial: udzial, grubosc: fillWidth).stroke()
             }
 
-            ziomek(in: pudlo, kontur: kontur, ekran: screenColor)
+            ziomek(in: pudlo, kontur: kontur,
+                   strefy: [(klapa, screenColor), (czapka, capColor), (bluza, hoodieColor)])
             return true
         }
         obraz.isTemplate = false
@@ -156,9 +176,9 @@ enum StatusIcon {
         return sciezka
     }
 
-    /// The figure inside the ring: the mask filled with `kontur`, the lid with `ekran`
-    /// (or with `kontur` too when `ekran` is nil).
-    private static func ziomek(in size: NSSize, kontur: NSColor, ekran: NSColor?) {
+    /// The figure inside the ring: the mask filled with `kontur`, each of `strefy` (a
+    /// polygon in the drawing's pixels) with its own colour. No zones — all `kontur`.
+    private static func ziomek(in size: NSSize, kontur: NSColor, strefy: [([NSPoint], NSColor)]) {
         guard let maska, let ctx = NSGraphicsContext.current?.cgContext else { return }
         let wR = ringRadius - lineWidth * 0.9
         let srodek = NSPoint(x: size.width / 2, y: size.height / 2)
@@ -171,29 +191,34 @@ enum StatusIcon {
                            width: CGFloat(maska.width) * k, height: CGFloat(maska.height) * k)
         let wnetrze = CGPath(ellipseIn: CGRect(x: srodek.x - wR, y: srodek.y - wR, width: 2 * wR, height: 2 * wR),
                              transform: nil)
-        let lid = CGMutablePath()
-        lid.addLines(between: klapa.map(Q))
-        lid.closeSubpath()
+        let sciezki: [(CGPath, NSColor)] = strefy.map { punkty, kolor in
+            let p = CGMutablePath()
+            p.addLines(between: punkty.map(Q))
+            p.closeSubpath()
+            return (p, kolor)
+        }
 
-        // Everything but the lid
+        // Everything outside the zones (they do not overlap, so even-odd cuts each out)
         ctx.saveGState()
         ctx.addPath(wnetrze); ctx.clip()
         let reszta = CGMutablePath()
         reszta.addRect(obraz.insetBy(dx: -1, dy: -1))
-        reszta.addPath(lid)
+        for (p, _) in sciezki { reszta.addPath(p) }
         ctx.addPath(reszta); ctx.clip(using: .evenOdd)
         ctx.clip(to: obraz, mask: maska)
         ctx.setFillColor(kontur.cgColor)
         ctx.fill(obraz)
         ctx.restoreGState()
 
-        // The lid
-        ctx.saveGState()
-        ctx.addPath(wnetrze); ctx.clip()
-        ctx.addPath(lid); ctx.clip()
-        ctx.clip(to: obraz, mask: maska)
-        ctx.setFillColor((ekran ?? kontur).cgColor)
-        ctx.fill(obraz)
-        ctx.restoreGState()
+        // Each zone in its own colour
+        for (p, kolor) in sciezki {
+            ctx.saveGState()
+            ctx.addPath(wnetrze); ctx.clip()
+            ctx.addPath(p); ctx.clip()
+            ctx.clip(to: obraz, mask: maska)
+            ctx.setFillColor(kolor.cgColor)
+            ctx.fill(obraz)
+            ctx.restoreGState()
+        }
     }
 }
