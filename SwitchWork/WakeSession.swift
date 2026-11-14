@@ -105,6 +105,13 @@ final class WakeSession {
             return refused
         }
 
+        // The screen block refused while turning on: the tick goes back off, the same rule as in
+        // setKeepScreenOn — a tick next to a block the system is not holding would be a lie.
+        // Since 0.3.15; before, the tick stayed on and only the warning said otherwise.
+        if refused.contains(.display) {
+            UserDefaults.standard.set(false, forKey: Defaults.keepScreenOn)
+        }
+
         scheduleDeadline()
         onChange?()
         return refused
